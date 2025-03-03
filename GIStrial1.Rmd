@@ -1,0 +1,79 @@
+---
+title: "Untitled"
+output: html_document
+date: "2025-03-03"
+---
+
+```{r}
+options(repos = c(CRAN = "https://cloud.r-project.org/"))
+library(tidyverse)
+
+library(sf)
+
+library(prettymapr)
+
+library(htmltools)
+
+library(leaflet)
+
+library(leafpop)
+```
+```{r}
+
+#Call the data 
+pc <- read.csv("white.csv")
+
+
+#View the first few rows of data
+head(pc)
+
+#Filter returned observations by a range of column attribute criteria
+pc <- pc %>% filter( 
+                latitude<0 &
+                !is.na(latitude) &
+                captive_cultivated == "false" &
+                quality_grade == "research")
+
+class(pc)
+
+#Converting a dataframe into a spatial object
+#Make the dataframe a spatial object of class = "sf"
+pc <- st_as_sf(pc, coords = c("longitude", "latitude"), crs = 4326)
+
+#What class is it?
+class(pc)
+
+#Note the new "geometry" column
+names(pc)
+
+#Plot the data points with no background
+ggplot() + geom_sf(data=pc)
+
+#Adding basemaps to plots
+library(rosm)
+library(ggspatial)
+
+install.packages("ggmap")
+library(ggmap)
+
+ggplot() + 
+  annotation_map_tile(type = "osm", progress = "none") + 
+  geom_sf(data=pc)
+
+library(leaflet)
+library(htmltools)
+leaflet() %>%
+  # Add default OpenStreetMap map tiles
+  addTiles(group = "Default") %>%  
+  # Add our points
+  addCircleMarkers(data = pc,
+                   group = "Carcharodon carcharias
+",
+                   radius = 3, 
+                   color = "red") 
+
+
+###computer won't load mapview, this is all i managed to get. 
+
+```
+
